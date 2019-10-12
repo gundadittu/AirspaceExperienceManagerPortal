@@ -41,11 +41,12 @@ function signInUser(payload, firebase) {
 
 function* userSignInWorkerSaga(action) {
   try {
+    console.log("hi");
     let firebase = yield select(selectors.firebase);
     yield call(signInUser, action.payload, firebase);
     yield put({ type: actionTypes.SIGN_IN_USER_SUCCESS });
   } catch (error) {
-    sentry.captureException(error);
+    // sentry.captureException(error);
     notification['error']({
       message: 'Unable to sign in user.',
       // description: error.message
@@ -72,7 +73,7 @@ function* userSignOutWorkerSaga(action) {
 
     yield put({ type: actionTypes.SIGN_OUT_USER_SUCCESS });
   } catch (error) {
-    sentry.captureException(error);
+    // sentry.captureException(error);
 
     notification['error']({
       message: 'Unable to sign out user.',
@@ -91,42 +92,9 @@ function setUpUser(payload, firebase, mixpanel) {
   const apiCall = firebase.functions.httpsCallable('getUserInfo')
   return apiCall({ uid: uid })
     .then(result => {
+      // should add to / replace stuff below
+
       const data = result.data;
-
-      const adminOfficeList = data.officeAdmin.map( x => x.uid);
-      const companyList = data.companies || null;
-      const officeList = data.offices.map( x => x.uid);
-      const email = data.email || null;
-      const firstName = data.firstName || null;
-      const lastName = data.lastName || null;
-
-      // mixpanel.set_group("adminOfficeList", adminOfficeList);
-      // mixpanel.set_group("officeList", officeList);
-      mixpanel.set_group("companyList", companyList);
-      mixpanel.identify(uid);
-      let env_check = process.env.NODE_ENV === 'production';
-      mixpanel.register({ "source": "webApp", "production": env_check});
-      mixpanel.people.set({ "Email": email, 'First Name': firstName, "Last Name": lastName});
-
-      let adminOffices = [];
-      for (let key in data.officeAdmin) {
-        const officeDict = data.officeAdmin[key];
-        const office = new AirOffice(officeDict);
-        if (office) {
-          adminOffices.push(office);
-        }
-      }
-      data.officeAdmin = adminOffices;
-
-      let userOffices = [];
-      for (let key in data.offices) {
-        const officeDict = data.offices[key];
-        const office = new AirOffice(officeDict);
-        if (office) {
-          userOffices.push(office);
-        }
-      }
-      data.offices = userOffices;
 
       return data;
     })

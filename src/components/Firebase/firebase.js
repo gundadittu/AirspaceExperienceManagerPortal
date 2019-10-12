@@ -24,7 +24,7 @@ const devConfig = {
 //   };
 //  process.env.NODE_ENV === 'production' ? prodConfig : devConfig;
 
-var config = prodConfig;
+var config = devConfig;
 
 class Firebase {
   constructor() {

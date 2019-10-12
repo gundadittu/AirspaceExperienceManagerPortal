@@ -3,6 +3,7 @@ import { updateObject } from '../utility';
 
 const initialState = {
     currentPage: null,
+    error: null,
     isLoadingSignIn: false
 };
 
