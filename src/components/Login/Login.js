@@ -25,10 +25,7 @@ class Login extends React.Component {
 const mapStateToProps = state => {
   return {
     error: state.general.error
-  };
+  }
 };
 
-export default connect(
-  mapStateToProps,
-  null
-)(Login);
+export default connect(mapStateToProps, null)(Login);
