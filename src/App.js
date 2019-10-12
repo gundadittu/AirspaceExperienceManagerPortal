@@ -26,6 +26,7 @@ class App extends React.Component {
   componentDidMount() {
     const firebase = this.firebase || null;
     if (firebase) {
+      // firebase.auth.signOut();
       const weakProps = this.props;
       this.listener = firebase.auth.onAuthStateChanged(function (user) {
         if (user) {
