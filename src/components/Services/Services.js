@@ -1,5 +1,5 @@
 import React from 'react';
 
-class Services extends React.Component(){
+class Services extends React.Component {
 
 };
