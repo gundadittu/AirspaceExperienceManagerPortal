@@ -1,10 +1,13 @@
 import React from 'react';
-import SideNavBar from '../SideNavBar/SideNavBar'
+import { Button } from 'antd';
 
-function HomePage(){
-  return (
-    <SideNavBar />
-  );
+class HomePage extends React.Component {
+  render() {
+
+    return (
+      <Button type="primary">click here to test service package retrieval</Button>
+    )
+  };
 };
 
 export default HomePage;

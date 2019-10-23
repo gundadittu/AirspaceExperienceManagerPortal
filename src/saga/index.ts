@@ -1,9 +1,9 @@
 import * as authSagas from './auth';
-// import * as generalSagas from './general';
+import * as generalSagas from './general';
 
 const sagas: {[index: string]: any} = {
   ...authSagas,
-  // ...generalSagas
+  ...generalSagas
 };
 
 export default function registerWithMiddleware(middleware: { run: Function }) {

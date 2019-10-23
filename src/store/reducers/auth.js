@@ -4,7 +4,7 @@ import { updateObject } from '../utility';
 const initialState = {
     user: null,
     type: null,
-    adminOfficeList: null,
+    experienceManagerOffices: null,
     isSettingUpUser: false
 };
 
@@ -21,8 +21,8 @@ const reducer = (state = initialState, action) => {
         case actionTypes.SET_UP_USER_SUCCESS:
             const data = action.payload.data || null;
             const type = data.type || null;
-            const adminOfficeList = data.officeAdmin || null;
-            return updateObject(state, { user: data, type: type, adminOfficeList: adminOfficeList, isSettingUpUser: false });
+            const experienceManagerOffices = data.offices || null;
+            return updateObject(state, { user: data, type: type, experienceManagerOffices: experienceManagerOffices, isSettingUpUser: false });
         case actionTypes.SET_UP_USER_ERROR:
             return updateObject(state, { user: null });
         default:

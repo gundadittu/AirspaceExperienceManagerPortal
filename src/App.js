@@ -1,14 +1,23 @@
 import React from "react";
 import { Route, Switch, withRouter } from 'react-router-dom';
-import { connect } from 'react-redux';
+import { connect, Provider } from 'react-redux';
+import MediaQuery from 'react-responsive';
 // import logo from "./logo.svg";
 import "./App.css";
 import Firebase from './components/Firebase';
 import Login from './components/Login/Login';
+import SideNavBar from './components/SideNavBar/SideNavBar';
+import NavBar from './components/NavBar/NavBar';
 import HomePage from './components/HomePage/HomePage';
+
 import * as generalActionCreators from './store/actions/general';
 import * as authActionCreators from './store/actions/auth';
-import { DatePicker } from "antd";
+import { DatePicker, Row, Col } from "antd";
+
+import * as storeFile from './store/store';
+
+import { BrowserRouter }from 'react-router-dom';
+import { PersistGate } from 'redux-persist/integration/react'
 
 class App extends React.Component {
   state = {
@@ -50,13 +59,37 @@ class App extends React.Component {
 
 
   render() {
+    this.props.loadServicePackages();
     if (!this.props.user){
       return(
         <Login />
       );
     } else {
       return(
-        <HomePage />
+        <BrowserRouter>
+          <Provider store={storeFile.store}>
+            <PersistGate loading={null} persistor={storeFile.persistor}>
+              <div style={{ background: '#FFFFFF' }}>
+                <Row>
+                  <MediaQuery minDeviceWidth={1000}>
+                    <Col span={4}>
+                      <SideNavBar />
+                    </Col>
+                    <Col span={20}>
+                      <NavBar />
+                    </Col>
+                  </MediaQuery>
+                  <MediaQuery maxDeviceWidth={1000}>
+                    <Col span={24}>
+                      <HomePage />
+                    </Col>
+                  </MediaQuery>
+                </Row>
+              </div>
+            </PersistGate>
+          </Provider>
+        </BrowserRouter>
+
       )
     }
   };
@@ -66,7 +99,7 @@ const mapStateToProps = state => {
   return {
     user: state.auth.user,
     firebase: state.firebase.firebase,
-    currentPage: state.general.currentPage
+    currentPage: state.general.currentPage,
   }
 };
 
@@ -74,7 +107,9 @@ const mapDispatchToProps = dispatch => {
   return {
     clearRedux: () => dispatch(generalActionCreators.clearReduxState()),
     setUpFirebase: (firebaseInstance) => dispatch(generalActionCreators.setUpFirebaseInstanceAction(firebaseInstance)),
-    setUpUser: (uid) => dispatch(authActionCreators.setUpUserAction(uid))
+    setUpUser: (uid) => dispatch(authActionCreators.setUpUserAction(uid)),
+    // temporary
+    loadServicePackages: () => dispatch(generalActionCreators.loadServicePackages())
   }
 };
 

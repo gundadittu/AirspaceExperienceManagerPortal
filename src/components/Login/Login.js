@@ -1,6 +1,6 @@
 import React from "react";
 import { connect } from "react-redux";
-import LoginNavBar from "./LoginNavBar";
+//import LoginNavBar from "./LoginNavBar";
 import LoginForm from "./LoginForm";
 import { Row, Col } from "antd";
 import "./Login.css";

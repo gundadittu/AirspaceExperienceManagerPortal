@@ -11,6 +11,12 @@ export const standardLinks = {
     iconType: "ordered-list",
     pageSubtitle: "to-do",
     linkTitle: "To Do"
+  },
+  profile: {
+    keyVal: "profile",
+    iconType: "user",
+    pageSubtitle: "profile",
+    linkTitle: "Profile"
   }
 };
 
@@ -30,19 +36,19 @@ export const officeSpecificLinks = {
   },
   users: {
     keyVal: "users",
-    iconType: null,
+    iconType: "team",
     pageSubtitle: "users",
     linkTitle: "Users"
   },
   supportTickets: {
     keyVal: "supportTickets",
-    iconType: null,
+    iconType: "exception",
     pageSubtitle: "support-tickets",
     linkTitle: "Support Tickets"
   },
   officeMetrics: {
     keyVal: "officeMetrics",
-    iconType: null,
+    iconType: "bar-chart",
     pageSubtitle: "office-metrics",
     linkTitle: "Office Metrics"
   }
