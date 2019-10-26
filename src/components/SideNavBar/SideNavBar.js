@@ -64,7 +64,12 @@ class SideNavBar extends React.Component {
 
     return (
       <Menu
-        onClick={this.handleClick} style={{ width: 256, height: 100, border: 0 }} defaultSelectedKeys={['Home']} mode="vertical" lassName="side-nav-bar"
+      style={{ border: 0 }}
+        //defaultSelectedKeys={currentPages}
+        mode="inline"
+        className="airspace-side-nav-bar menu-tab"
+        forceSubMenuRender={true}
+        mode="vertical"
       >
         {this.renderMainLogo()}
         {this.renderNavigationLinks(standardLinks, fontSize, iconSize)}

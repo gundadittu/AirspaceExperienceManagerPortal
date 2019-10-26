@@ -38,16 +38,16 @@ const reducer = (state = initialState, action) => {
         case actionTypes.SIGN_OUT_USER_ERROR:
             return updateObject(state, { isLoading: false, error: null });
         case actionTypes.CHANGE_PAGE:
-            const payload = action.payload || null;
-            return updateObject(state, { ...payload });
+            const changePagePayload = action.payload || null;
+            return updateObject(state, { ...changePagePayload });
         case actionTypes.LOAD_SERVICE_PACKAGES_SUCCESS:
             console.log('service packages loaded successfully');
-            payload = action.payload || null;
-            return updateObject(state, { ...payload });
+            const servicePackagePayload = action.payload || null;
+            return updateObject(state, { ...servicePackagePayload });
         case actionTypes.LOAD_SERVICE_PACKAGES_ERROR:
-            console.log('servic packages loaded unsuccessfully')
-            const notpayload = action.payload || null;
-            return initialState;
+            console.log('service packages loaded unsuccessfully')
+            const errorPayload = action.payload || null;
+            return errorPayload;
 
 
         default:

@@ -15,7 +15,7 @@ function* loadServicePackagesWorkerSaga(action) {
         const response = yield call(loadServicePackages, firebase);
         yield put({
             type: actionTypes.LOAD_SERVICE_PACKAGES_SUCCESS,
-            payload: { service_packages: response }
+            payload: { servicePackages: response }
         });
     } catch(error) {
         yield put({
@@ -31,19 +31,16 @@ function loadServicePackages(firebase) {
     console.log('in saga function after firebase function call');
     return apiCall({})
         .then( result => {
-            //console.log(result)
+
+            var key_counter = 0;
+            result.data = result.data.map(x => {
+                x.key = key_counter;
+                key_counter++;
+                return x;
+            })
+
             console.log(result.data);
             return result.data;
-            /*
-            var notifications = [];
-            for (let key in data) {
-                const value = data[key];
-                const not = new AirNotification(value) || null;
-                if (not !== null) {
-                    notifications.push(not);
-                }
-            }
-            return notifications;
-            */
+
     })
 }
