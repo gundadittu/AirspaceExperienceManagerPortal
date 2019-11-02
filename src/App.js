@@ -24,15 +24,6 @@ class App extends React.Component {
   state = {
     toggle_render: false
   }
-  /*
-  componentWillMount() {
-    // Sentry.init({ dsn: 'https://8825e624e2594f1d8ca77d056c8b56dd@sentry.io/1395312' });
-    if (this.props.firebase === null) {
-      this.firebase = new Firebase()
-      this.props.setUpFirebase(this.firebase);
-    }
-  }
-  */
 
   componentDidMount() {
     if (this.props.firebase === null) {
@@ -62,12 +53,9 @@ class App extends React.Component {
     this.listener();
   }
 
-
-
-
   render() {
-    //this.props.loadServicePackages();
     if (!this.props.user){
+      console.log(this.props.user);
       return(
         <Login />
       );
@@ -118,8 +106,6 @@ const mapDispatchToProps = dispatch => {
     clearRedux: () => dispatch(generalActionCreators.clearReduxState()),
     setUpFirebase: (firebaseInstance) => dispatch(generalActionCreators.setUpFirebaseInstanceAction(firebaseInstance)),
     setUpUser: (uid) => dispatch(authActionCreators.setUpUserAction(uid)),
-    // temporary
-    loadServicePackages: () => dispatch(generalActionCreators.loadServicePackages())
   }
 };
 

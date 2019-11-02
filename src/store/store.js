@@ -5,6 +5,7 @@ import registerWithMiddleware from '../saga/index.ts';
 import firebaseReducer from './reducers/firebase';
 import authReducer from './reducers/auth';
 import generalReducer from './reducers/general'
+import servicePackageReducer from './reducers/servicePackage'
 import { persistStore, persistReducer } from 'redux-persist'
 import storage from 'redux-persist/lib/storage'
 
@@ -18,6 +19,7 @@ import storage from 'redux-persist/lib/storage'
     firebase: firebaseReducer,
     general: generalReducer,
     auth: authReducer,
+    servicePackages: servicePackageReducer
  });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer)

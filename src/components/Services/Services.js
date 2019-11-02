@@ -1,10 +1,8 @@
 import React from "react";
-import ServicesTable from './ServicesTable';
 import { withRouter } from 'react-router-dom';
 import { Table, Menu, Dropdown, Button, Icon } from 'antd';
 import { connect, Provider } from 'react-redux';
-import * as generalActionCreators from '../../store/actions/general';
-import * as authActionCreators from '../../store/actions/auth';
+import * as servicePackageActionCreators from '../../store/actions/servicePackage';
 const moment = require('moment');
 
 class Services extends React.Component {
@@ -35,11 +33,53 @@ class Services extends React.Component {
     return str;
   }
 
+  getNextStatus(currentStatus){
+    const STATUSES = ['REQUESTED_BY_CUSTOMER', 'SETTING_UP_PLAN', 'PENDING_CUSTOMER_APPROVAL', 'NEEDS_SETTING_UP', 'SETTING_UP_SERVICE', 'ACTIVE', 'CANCELLATION_REQUESTED_BY_CUSTOMER', 'CANCELLED', 'EXPIRED'];
+    for (let i = 0; i < STATUSES.length - 1; i++){
+      if (STATUSES[i] == currentStatus){
+        return STATUSES[i+1];
+      }
+    }
+    return currentStatus;
+
+    // need to change this
+
+
+  }
+
   componentDidMount() {
     this.props.loadServicePackages();
+    //this.props.editServicePackageStatus('ivAkLGclE005TZpLp59m', 'INACTIVE');
 
   };
 
+  handleStatusEdit = (e, status, servicePackageUID) => {
+    const key = e.key;
+    console.log("key");
+    console.log(key);
+    if (key === "advanceStatus") {
+      this.props.editServicePackageStatus(servicePackageUID, this.getNextStatus(status));
+    }
+  }
+
+  menu = (status, servicePackageUID) => {
+    return (
+      <Menu onClick={(e) => this.handleStatusEdit(e,status,servicePackageUID)}>
+        <Menu.Item key="advanceStatus" >
+          <Icon type="arrow-right" />
+          Advance Status to: {this.formatStatus(this.getNextStatus(status))}
+        </Menu.Item>
+        <Menu.Item key="manuallyChangeStatus">
+          <Icon type="form" />
+          Manually Change Status
+        </Menu.Item>
+        <Menu.Item key="cancelPackage">
+          <Icon type="close" />
+          Cancel Package
+        </Menu.Item>
+      </Menu>
+    );
+  };
 
   columns = [
     {
@@ -57,33 +97,29 @@ class Services extends React.Component {
       title: 'Latest Update',
       dataIndex: 'mostRecentUpdate',
       key: 'mostRecentUpdate',
-      render: (ts) => (<span>{this.formatTimestamp(ts)} </span>)
+      render: (ts) => (<span> {this.formatTimestamp(ts)} </span>)
     },
     // change the status into an action so it can be updated
     {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
-      render: (status) => (
-        <Dropdown.Button
-          overlay={
-            <Menu>
-              <Menu.Item key="1">
-                <Icon type="user" />
-                1st menu item
-              </Menu.Item>
-              <Menu.Item key="2">
-                <Icon type="user" />
-                2nd menu item
-              </Menu.Item>
-              <Menu.Item key="3">
-                <Icon type="user" />
-                3rd menu item
-              </Menu.Item>
-            </Menu>
-          }>
-            {this.formatStatus(status)}
-        </Dropdown.Button>)
+      render: (status, record) => (
+        <React.Fragment>
+          {console.log(record.uid)}
+          {console.log(status)}
+          <span> {this.formatStatus(status)} | </span>
+          <Dropdown overlay={this.menu(status, record.uid)}>
+            <a className="ant-dropdown-link" href="#" style={{fontSize: 16}}>
+              Edit <Icon type="down" />
+            </a>
+          </Dropdown>
+        </ React.Fragment>
+      )
+    },
+    {
+      title: 'More Info',
+      dataIndex: ''
     }
 
 
@@ -97,15 +133,13 @@ class Services extends React.Component {
 
   render() {
 
-
     return(
       <div>
-        <h1> Services Packages </h1>
+        <h1> Service Packages </h1>
 
         <Table
-
-        columns={this.columns}
-        dataSource={this.props.servicePackages}
+          columns={this.columns}
+          dataSource={this.props.servicePackages}
         />
       </div>
     );
@@ -116,14 +150,16 @@ class Services extends React.Component {
 
 const mapStateToProps = state => {
     return {
-      servicePackages: state.general.servicePackages
+      servicePackages: state.servicePackages.servicePackages
 
     }
 };
 
 const mapDispatchToProps = dispatch => {
     return {
-      loadServicePackages: () => dispatch(generalActionCreators.loadServicePackages())
+      loadServicePackages: () => dispatch(servicePackageActionCreators.loadServicePackages()),
+      editServicePackageStatus: (servicePackageUID, newStatus) =>
+      dispatch(servicePackageActionCreators.editServicePackageStatus(servicePackageUID, newStatus))
     }
 };
 

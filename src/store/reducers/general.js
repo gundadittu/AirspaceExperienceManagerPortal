@@ -40,16 +40,6 @@ const reducer = (state = initialState, action) => {
         case actionTypes.CHANGE_PAGE:
             const changePagePayload = action.payload || null;
             return updateObject(state, { ...changePagePayload });
-        case actionTypes.LOAD_SERVICE_PACKAGES_SUCCESS:
-            console.log('service packages loaded successfully');
-            const servicePackagePayload = action.payload || null;
-            return updateObject(state, { ...servicePackagePayload });
-        case actionTypes.LOAD_SERVICE_PACKAGES_ERROR:
-            console.log('service packages loaded unsuccessfully')
-            const errorPayload = action.payload || null;
-            return errorPayload;
-
-
         default:
             return state;
     }

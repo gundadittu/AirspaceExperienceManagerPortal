@@ -1,12 +1,5 @@
 import * as actionTypes from './actionTypes';
 
-export const loadServicePackages = () => {
-  return {
-    type: actionTypes.LOAD_SERVICE_PACKAGES
-  };
-}
-
-
 export const clearReduxState = () => {
   return {
     type: actionTypes.CLEAR_REDUX_STATE,
