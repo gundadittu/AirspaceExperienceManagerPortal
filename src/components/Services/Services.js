@@ -25,6 +25,9 @@ class Services extends React.Component {
   }
 
   formatStatus(str){
+    if (str === undefined || str === null) {
+      return "No Status Found"
+    }
     str = str.replace(/[_-]/g, " ");
     str = str.toLowerCase()
       .split(' ')
@@ -42,23 +45,26 @@ class Services extends React.Component {
     }
     return currentStatus;
 
-    // need to change this
+    // need to make this more robust
 
 
   }
 
   componentDidMount() {
     this.props.loadServicePackages();
+    // console.log('this.props.servicePackages below');
+    // console.log(this.props.packageList);
     //this.props.editServicePackageStatus('ivAkLGclE005TZpLp59m', 'INACTIVE');
 
   };
 
   handleStatusEdit = (e, status, servicePackageUID) => {
     const key = e.key;
-    console.log("key");
-    console.log(key);
+
     if (key === "advanceStatus") {
-      this.props.editServicePackageStatus(servicePackageUID, this.getNextStatus(status));
+      console.log("advancing status")
+      this.props.editServicePackageStatus(servicePackageUID,            this.getNextStatus(status));
+      //this.props.loadServicePackages();
     }
   }
 
@@ -91,7 +97,7 @@ class Services extends React.Component {
       title: 'Office',
       dataIndex: 'office',
       key: 'office',
-      render: (office) => (<a>{office.name}</a>)
+      render: (office) => (<span>{office.name}</span>)
     },
     {
       title: 'Latest Update',
@@ -106,15 +112,13 @@ class Services extends React.Component {
       key: 'status',
       render: (status, record) => (
         <React.Fragment>
-          {console.log(record.uid)}
-          {console.log(status)}
           <span> {this.formatStatus(status)} | </span>
           <Dropdown overlay={this.menu(status, record.uid)}>
             <a className="ant-dropdown-link" href="#" style={{fontSize: 16}}>
               Edit <Icon type="down" />
             </a>
           </Dropdown>
-        </ React.Fragment>
+        </React.Fragment>
       )
     },
     {
@@ -136,10 +140,11 @@ class Services extends React.Component {
     return(
       <div>
         <h1> Service Packages </h1>
-
+        {/* need to add loading param to Table */}
         <Table
           columns={this.columns}
-          dataSource={this.props.servicePackages}
+          dataSource={this.props.packageList}
+
         />
       </div>
     );
@@ -150,7 +155,7 @@ class Services extends React.Component {
 
 const mapStateToProps = state => {
     return {
-      servicePackages: state.servicePackages.servicePackages
+      packageList: state.servicePackages.packageList
 
     }
 };

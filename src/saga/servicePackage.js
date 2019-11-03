@@ -28,14 +28,8 @@ function loadServicePackages(firebase) {
     return apiCall({})
         .then( result => {
 
-            var key_counter = 0;
-            result.data = result.data.map(x => {
-                x.key = key_counter;
-                key_counter++;
-                return x;
-            })
-
-            //console.log(result.data);
+            // console.log("loadServicePackages saga response:")
+            // console.log(result.data);
             return result.data;
 
     })
@@ -51,11 +45,9 @@ function* editServicePackageStatusWorkerSaga(action){
         const response = yield call(editServicePackageStatus, action.payload, firebase);
         yield put({
             type: actionTypes.EDIT_SERVICE_PACKAGE_STATUS_SUCCESS,
-            payload: { newStatus: response }
+            payload: { ...response }
         });
     } catch(error) {
-        console.log('Worker Saga Error: ')
-        console.log(error);
         yield put({
             type: actionTypes.EDIT_SERVICE_PACKAGE_STATUS_ERROR,
             payload: { error: error }
@@ -70,10 +62,8 @@ function editServicePackageStatus(payload, firebase){
     const apiCall = firebase.functions.httpsCallable('editServicePackageStatus');
     return apiCall({ servicePackageUID: servicePackageUID, newStatus: newStatus })
         .then( result => {
-            // manipulate data here
-            console.log('Edited Service Package: ');
+            // manipulate data here if needed
             console.log(result.data);
-
             return result.data
         })
 
