@@ -73,3 +73,8 @@ p {
 .page-nav-menu {
     border-bottom: 0
 }
+
+
+.ant-menu:not(.ant-menu-horizontal) .ant-menu-item-selected {
+	background: transparent;
+}

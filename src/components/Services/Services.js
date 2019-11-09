@@ -1,6 +1,6 @@
 import React from "react";
 import { withRouter } from 'react-router-dom';
-import { Table, Menu, Dropdown, Button, Icon } from 'antd';
+import { Table, Menu, Dropdown, Button, Icon, Divider, Descriptions } from 'antd';
 import { connect, Provider } from 'react-redux';
 import * as servicePackageActionCreators from '../../store/actions/servicePackage';
 const moment = require('moment');
@@ -68,7 +68,7 @@ class Services extends React.Component {
     }
   }
 
-  menu = (status, servicePackageUID) => {
+  statusEditMenu = (status, servicePackageUID) => {
     return (
       <Menu onClick={(e) => this.handleStatusEdit(e,status,servicePackageUID)}>
         <Menu.Item key="advanceStatus" >
@@ -84,6 +84,29 @@ class Services extends React.Component {
           Cancel Package
         </Menu.Item>
       </Menu>
+    );
+  };
+
+
+  packageDetails = (record) => {
+    return (
+      <div>
+        { record.formData !== undefined &&
+          record.formData.map(x => {
+            return (
+              <div>
+                <p>Question: {x.question}</p>
+                <p>Answer: {x.answer}</p>
+              </div>
+            );}
+          )
+         }
+         { record.formData !== undefined &&
+           <Divider />
+         }
+         <p>OfficeUID: {record.officeUID._path.segments[1]}</p>
+
+      </div>
     );
   };
 
@@ -112,22 +135,15 @@ class Services extends React.Component {
       key: 'status',
       render: (status, record) => (
         <React.Fragment>
-          <span> {this.formatStatus(status)} | </span>
-          <Dropdown overlay={this.menu(status, record.uid)}>
+          <span> {this.formatStatus(status)}<Divider type="vertical"/></span>
+          <Dropdown overlay={this.statusEditMenu(status, record.uid)}>
             <a className="ant-dropdown-link" href="#" style={{fontSize: 16}}>
               Edit <Icon type="down" />
             </a>
           </Dropdown>
         </React.Fragment>
       )
-    },
-    {
-      title: 'More Info',
-      dataIndex: ''
     }
-
-
-
   ]
 
 
@@ -143,8 +159,9 @@ class Services extends React.Component {
         {/* need to add loading param to Table */}
         <Table
           columns={this.columns}
+          expandedRowRender={record => this.packageDetails(record)}
           dataSource={this.props.packageList}
-
+          loading={this.props.isLoadingServicePackages}
         />
       </div>
     );
@@ -155,8 +172,8 @@ class Services extends React.Component {
 
 const mapStateToProps = state => {
     return {
-      packageList: state.servicePackages.packageList
-
+      packageList: state.servicePackages.packageList,
+      isLoadingServicePackages: state.servicePackages.isLoadingServicePackages
     }
 };
 

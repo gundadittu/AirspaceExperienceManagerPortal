@@ -2,23 +2,29 @@ import React from "react";
 import { Route, Switch, withRouter } from 'react-router-dom';
 import { connect, Provider } from 'react-redux';
 import MediaQuery from 'react-responsive';
-// import logo from "./logo.svg";
-import "./App.css";
+import { BrowserRouter }from 'react-router-dom';
+import { PersistGate } from 'redux-persist/integration/react'
+
 import Firebase from './components/Firebase';
 import Login from './components/Login/Login';
 import SideNavBar from './components/SideNavBar/SideNavBar';
 import NavBar from './components/NavBar/NavBar';
 import HomePage from './components/HomePage/HomePage';
 import Services from './components/Services/Services';
+import SupportTickets from './components/SupportTickets/SupportTickets';
+import Users from './components/Users/Users';
+import OfficeMetrics from './components/OfficeMetrics/OfficeMetrics';
+import ToDo from './components/ToDo/ToDo';
+import Profile from './components/Profile/Profile';
 
 import * as generalActionCreators from './store/actions/general';
 import * as authActionCreators from './store/actions/auth';
-import { DatePicker, Row, Col } from "antd";
-
 import * as storeFile from './store/store';
 
-import { BrowserRouter }from 'react-router-dom';
-import { PersistGate } from 'redux-persist/integration/react'
+// import logo from "./logo.svg";
+import "./App.css";
+import { DatePicker, Row, Col } from "antd";
+
 
 class App extends React.Component {
   state = {
@@ -47,6 +53,10 @@ class App extends React.Component {
       const error = Error("Firebase NOT set up in App.js render()");
       // Sentry.captureException(error);
     }
+
+
+    // set an office to be used for the bottom part of the menu
+
   }
 
   componentWillUnmount() {
@@ -72,7 +82,16 @@ class App extends React.Component {
                     </Col>
                     <Col span={20}>
                       <NavBar />
-                      <Services />
+                      <Switch>
+                        <Route exact path='/' component={HomePage} />
+                        <Route exact path='/home' component={HomePage} />
+                        <Route exact path='/to-do' component={ToDo} />
+                        <Route exact path='/profile' component={Profile} />
+                        <Route exact path='/:currentOfficeUID/services' component={Services} />
+                        <Route exact path='/:currentOfficeUID/users' component={Users} />
+                        <Route exact path='/:currentOfficeUID/office-metrics' component={OfficeMetrics} />
+                        <Route exact path='/:currentOfficeUID/support-tickets' component={SupportTickets} />
+                      </Switch>
                     </Col>
                   </MediaQuery>
                   {/*<MediaQuery maxDeviceWidth={1000}>
@@ -98,6 +117,7 @@ const mapStateToProps = state => {
     user: state.auth.user,
     firebase: state.firebase.firebase,
     currentPage: state.general.currentPage,
+    currentOffice: state.general.currentOffice
   }
 };
 

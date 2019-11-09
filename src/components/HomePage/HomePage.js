@@ -5,7 +5,7 @@ class HomePage extends React.Component {
   render() {
 
     return (
-      <Button type="primary">click here to test service package retrieval</Button>
+      <p>This is the home page.</p>
     )
   };
 };

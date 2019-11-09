@@ -4,7 +4,8 @@ import { updateObject } from '../utility';
 const initialState = {
     currentPage: null,
     error: null,
-    isLoadingSignIn: false
+    isLoadingSignIn: false,
+    currentOffice: null
 };
 
 const reducer = (state = initialState, action) => {
@@ -27,7 +28,9 @@ const reducer = (state = initialState, action) => {
         case actionTypes.SET_UP_USER:
             return updateObject(state, { isLoadingSignIn: true, isLoading: true });
         case actionTypes.SET_UP_USER_SUCCESS:
-            return updateObject(state, { isLoadingSignIn: false, isLoading: false, error: null });
+            // just picking the first office to be the current office
+            const currentOfficeUID = action.payload.data.officesUnderExperienceManager[0];
+            return updateObject(state, { isLoadingSignIn: false, isLoading: false, error: null, currentOffice: currentOfficeUID});
         case actionTypes.SET_UP_USER_ERROR:
             const setUpError = action.payload.error || null;
             return updateObject(state, { isLoadingSignIn: false, isLoading: false, error: setUpError });

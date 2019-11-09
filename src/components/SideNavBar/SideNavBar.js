@@ -22,16 +22,16 @@ class SideNavBar extends React.Component {
       return null;
     }
 
-    const pushOfficeHomeRoute = (uid) => {
-      this.props.history.push("/office/" + uid + "/home")
-      document.location.reload()
+    // change this to just reload the current page rather than loading the office metrics route in particular
+    const pushOfficeMetricsRoute = (uid) => {
+      this.props.history.push("/" + uid + "/office-metrics");
+      document.location.reload();
     }
 
     return (
       <SubMenu key={"sub1"} title={<span><Icon type="appstore" /><span>Switch Offices</span></span>}>
         {this.props.experienceManagerOffices.map((office) => (
-          //<Menu.Item key={office.uid} onClick={() => pushOfficeHomeRoute(office.uid)}>
-          <Menu.Item key={office.uid}>
+          <Menu.Item key={office.uid} onClick={() => pushOfficeMetricsRoute(office.uid)}>
           {<span style={{ fontSize: fontSize }}>
           <span>{office.name}</span></span>}
           </Menu.Item>
@@ -40,11 +40,24 @@ class SideNavBar extends React.Component {
     );
   };
 
-  renderNavigationLinks(links, fontSize, iconSize){
+  renderStandardLinks(fontSize, iconSize){
+    const links = config.standardLinks
     return (
       Object.keys(links).map((key) => (
         <Menu.Item key={links[key].keyVal}>
-        <Link to={'/experienceManagerPortal/' + this.props.user.uid + '/' + links[key].pageSubtitle}>
+        <Link to={'/' + links[key].pageSubtitle}>
+          {<span style={{ fontSize: fontSize }}>
+          <Icon type={links[key].iconType} style={{ fontSize: iconSize }} /> <span>{links[key].linkTitle}</span></span>}
+        </Link>
+      </Menu.Item>)));
+  };
+
+  renderOfficeSpecificLinks(fontSize, iconSize){
+    const links = config.officeSpecificLinks;
+    return (
+      Object.keys(links).map((key) => (
+        <Menu.Item key={links[key].keyVal}>
+        <Link to={'/' + this.props.currentOffice + '/' + links[key].pageSubtitle}>
           {<span style={{ fontSize: fontSize }}>
           <Icon type={links[key].iconType} style={{ fontSize: iconSize }} /> <span>{links[key].linkTitle}</span></span>}
         </Link>
@@ -59,8 +72,8 @@ class SideNavBar extends React.Component {
       iconSize = 25
     }
 
-    const standardLinks = config.standardLinks;
-    const officeSpecificLinks = config.officeSpecificLinks;
+    //const standardLinks = config.standardLinks;
+    //const officeSpecificLinks = config.officeSpecificLinks;
 
     return (
       <Menu
@@ -72,10 +85,10 @@ class SideNavBar extends React.Component {
         mode="vertical"
       >
         {this.renderMainLogo()}
-        {this.renderNavigationLinks(standardLinks, fontSize, iconSize)}
+        {this.renderStandardLinks(fontSize, iconSize)}
         <Divider />
         {this.renderOfficeSwitcher(fontSize, iconSize)}
-        {this.renderNavigationLinks(officeSpecificLinks, fontSize, iconSize)}
+        {this.renderOfficeSpecificLinks(fontSize, iconSize)}
       </Menu>
     );
   }
@@ -87,6 +100,8 @@ const mapStateToProps = state => {
     userType: state.auth.type,
     experienceManagerOffices: state.auth.experienceManagerOffices,
     currentPage: state.general.currentPage,
+    currentOffice: state.general.currentOffice,
+    officesUnderExperienceManager: state.auth.user.officesUnderExperienceManager
     // currentOfficeAdminUID: state.general.currentOfficeAdminUID,
     // currentOfficeAdmin: state.general.currentOfficeAdmin,
     // badgeCount: state.officeAdmin.pendingServicePlanCount,

@@ -16,10 +16,12 @@ class NavBar extends React.Component {
     this.props.loadNotifications()
   }
   */
-
-  handleSignOut = (e) => {
-    this.props.signOutUser();
+  handleClick = (e) => {
+    if (e.key === "signOut") {
+      this.props.signOutUser();
+    }
   }
+
 
   renderProfileMenu() {
     return (
