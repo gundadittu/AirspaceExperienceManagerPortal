@@ -1,5 +1,5 @@
 import React from "react";
-import { withRouter } from 'react-router-dom';
+import { Route, Switch, Link, withRouter } from 'react-router-dom';
 import { connect, Provider } from 'react-redux';
 
 import * as servicePackageActionCreators from '../../store/actions/servicePackage';
@@ -76,6 +76,10 @@ class ToDo extends React.Component {
     </Menu>);
   }
 
+  setCurrentServicePackageUID(e, servicePackageUID){
+    this.props.setCurrentServicePackageUID(servicePackageUID);
+  }
+
   renderPackagesByStatus(status){
     let packages = this.props.packageList.filter( x => {
       return x.status === status
@@ -91,7 +95,15 @@ class ToDo extends React.Component {
             return (
               <div>
                 <Card
-                  title={<span>{x.office.name}</span>}
+                  title={
+                    <span>
+                      {x.office.name} 
+                      <Divider type='vertical'/>
+                      <Button onClick = {(e) => this.setCurrentServicePackageUID(e,x.uid)}>
+                        <Link to={'/service-package/' + x.uid}>More Info</Link>
+                      </Button>
+                    </span>
+                    }
                   extra={<span>Last Update: {this.formatTimestamp(x.mostRecentUpdate._seconds)}</span>}
                   hoverable
                 >
@@ -117,7 +129,7 @@ class ToDo extends React.Component {
                     )}
                   </Row>
                   <Row gutter={16}>
-                    <Dropdown   overlay={this.changeStatusDropdownMenu(x.status,x.uid)}>
+                    <Dropdown overlay={this.changeStatusDropdownMenu(x.status,x.uid)}>
                       <Button>
                         Change Status <Icon type="down" />
                       </Button>
@@ -168,8 +180,8 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
     return {
       loadServicePackages: () => dispatch(servicePackageActionCreators.loadServicePackages()),
-      editServicePackageStatus: (servicePackageUID, newStatus) =>
-      dispatch(servicePackageActionCreators.editServicePackageStatus(servicePackageUID, newStatus))
+      editServicePackageStatus: (servicePackageUID, newStatus) => dispatch(servicePackageActionCreators.editServicePackageStatus(servicePackageUID, newStatus)),
+      setCurrentServicePackageUID: (servicePackageUID) => dispatch(servicePackageActionCreators.setCurrentServicePackageUID(servicePackageUID))
     }
 };
 

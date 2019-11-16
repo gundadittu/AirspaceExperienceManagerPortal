@@ -31,6 +31,13 @@ const reducer = (state = initialState, action) => {
             console.log('service packaged status edited unsuccessfully');
             const editServicePackageStatusErrorPayload = action.payload || null;
             return editServicePackageStatusErrorPayload;
+        case actionTypes.SET_CURRENT_SERVICE_PACKAGE_UID:
+            const servicePackageUID = action.payload || null;
+            if (servicePackageUID === null){
+                return state;
+            }
+            return updateObject(state, { currentServicePackageUID : servicePackageUID });
+       
         default:
             return state;
     }

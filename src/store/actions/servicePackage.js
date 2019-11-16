@@ -15,3 +15,21 @@ export const editServicePackageStatus = (servicePackageUID, newStatus) => {
     }
   };
 }
+
+export const setCurrentServicePackageUID = (servicePackageUID) => {
+  return {
+    type: actionTypes.SET_CURRENT_SERVICE_PACKAGE_UID,
+    payload: {
+      servicePackageUID: servicePackageUID
+    }
+  };
+}
+
+export const loadServicePackage = (servicePackageUID) => {
+  return {
+    type: actionTypes.LOAD_SERVICE_PACKAGES,
+    payload: {
+      servicePackageUID: servicePackageUID
+    }
+  }
+}

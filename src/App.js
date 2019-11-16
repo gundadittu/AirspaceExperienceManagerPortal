@@ -16,6 +16,7 @@ import Users from './components/Users/Users';
 import OfficeMetrics from './components/OfficeMetrics/OfficeMetrics';
 import ToDo from './components/ToDo/ToDo';
 import Profile from './components/Profile/Profile';
+import ServicePackage from './components/ServicePackage/ServicePackage';
 
 import * as generalActionCreators from './store/actions/general';
 import * as authActionCreators from './store/actions/auth';
@@ -89,6 +90,7 @@ class App extends React.Component {
                           <Route exact path='/home' component={HomePage} />
                           <Route exact path='/to-do' component={ToDo} />
                           <Route exact path='/profile' component={Profile} />
+                          <Route exact path='/service-package/:servicePackageUID' component={ServicePackage}/>
                           <Route exact path='/:currentOfficeUID/services' component={Services} />
                           <Route exact path='/:currentOfficeUID/users' component={Users} />
                           <Route exact path='/:currentOfficeUID/office-metrics' component={OfficeMetrics} />

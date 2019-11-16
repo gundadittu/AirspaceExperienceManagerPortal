@@ -35,6 +35,36 @@ function loadServicePackages(firebase) {
     })
 };
 
+export function* loadServicePackageWatchSaga(){
+    yield takeLatest(actionTypes.LOAD_SERVICE_PACKAGE, loadServicePackageSagaWorkerSaga);
+}
+
+function* loadServicePackageSagaWorkerSaga(action){
+    try {
+        let firebase = yield select(selectors.firebase);
+        const response = yield call(loadServicePackage, action.payload, firebase);
+        yield put({
+            type: actionTypes.LOAD_SERVICE_PACKAGE_SUCCESS,
+            payload: { ...response }
+        });
+    } catch(error) {
+        yield put({
+            type: actionTypes.LOAD_SERVICE_PACKAGE_ERROR,
+            payload: { error: error }
+        });
+    }
+}
+
+function loadServicePackage(payload, firebase){
+    const servicePackageUID = payload.servicePackageUID || null;
+    const apiCall = firebase.functions.httpsCallable('loadServicePackage');
+    return apiCall({ servicePackageUID: servicePackageUID })
+        .then( result => {
+            console.log(result.data);
+            return(result.data);
+        })
+}
+
 export function* editServicePackageStatusWatchSaga(){
     yield takeLatest(actionTypes.EDIT_SERVICE_PACKAGE_STATUS, editServicePackageStatusWorkerSaga);
 }
@@ -63,7 +93,7 @@ function editServicePackageStatus(payload, firebase){
     return apiCall({ servicePackageUID: servicePackageUID, newStatus: newStatus })
         .then( result => {
             // manipulate data here if needed
-            return result.data
+            return result.data;
         })
 
 }
