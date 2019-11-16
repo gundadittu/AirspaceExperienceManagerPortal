@@ -7,69 +7,137 @@ import * as servicePackageActionCreators from '../../store/actions/servicePackag
 import * as config from './ToDoConfig';
 
 import "./ToDo.css";
-import { Tabs } from 'antd';
+import { Tabs, Card, Badge, Empty, Typography, Divider, Button, Icon, Statistic, Col, Row, Dropdown, Menu } from 'antd';
 const { TabPane } = Tabs;
+const { Text } = Typography;
+const STATUSES = ['REQUESTED_BY_CUSTOMER', 'SETTING_UP_PLAN', 'PENDING_CUSTOMER_APPROVAL', 'NEEDS_SETTING_UP', 'SETTING_UP_SERVICE', 'ACTIVE', 'CANCELLATION_REQUESTED_BY_CUSTOMER', 'CANCELLED', 'EXPIRED'];
+
+const moment = require('moment');
 
 
 
 
 class ToDo extends React.Component {
 
+  state = {
+    packageList: null
+  }
+
 
   componentDidMount(){
     this.props.loadServicePackages();
+  }
+
+  formatTimestamp(time){
+    return moment.unix(time).format("h:mm A, dddd, MMMM D");
+  }
+
+  // need to make this more robust
+  getNextStatus(currentStatus){
+    for (let i = 0; i < STATUSES.length - 1; i++){
+      if (STATUSES[i] == currentStatus){
+        return STATUSES[i+1];
+      }
+    }
+    return currentStatus;
+  }
+
+  handleAdvanceStatus(e, status, servicePackageUID){
+    this.props.editServicePackageStatus(servicePackageUID,            this.getNextStatus(status));
+  };
+
+  handleChangeStatus(e, servicePackageUID){
+    const newStatus = e.key;
+    this.props.editServicePackageStatus(servicePackageUID, newStatus);
+  }
+
+  changeStatusDropdownMenu = (currentStatus, servicePackageUID) => {
+    return (
+      <Menu placement="bottomLeft">
+        {config.statuses.map(status => {
+          return(
+            <Menu.Item
+              key={status.key}
+              disabled={status.key === currentStatus}
+              onClick={(e) => this.handleChangeStatus(e, servicePackageUID)}>
+              {status.title}
+            </Menu.Item>
+          )
+        })}
+    </Menu>);
   }
 
   renderPackagesByStatus(status){
     let packages = this.props.packageList.filter( x => {
       return x.status === status
     });
-    //put relevant packages data into renderable form
 
-    return (<p> {status} work in progress</p>);
+    if (packages.length == 0){
+      return (
+        <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={<span>No packages at this stage</span>}/>
+      );
+    } else {
+        return (
+          packages.map( x => {
+            return (
+              <div>
+                <Card
+                  title={<span>{x.office.name}</span>}
+                  extra={<span>Last Update: {this.formatTimestamp(x.mostRecentUpdate._seconds)}</span>}
+                  hoverable
+                >
+                  <Row gutter={16}>
+                    <Button type="primary" onClick={(e) => this.handleAdvanceStatus(e,x.status,x.uid)}>Advance to Next Status <Icon type="right" /></Button>
+                  </Row>
+                  <br></br>
+                  <Row type="flex" justify="start" gutter={16}>
+                    { x.formData !== undefined &&
+                      x.formData.map(x => {
+                      return (
+                        <div>
+                          <Col>
+                            <Statistic title={x.question} value={x.answer} />
+                          </Col>
+                          <br></br>
+                        </div>
+                      );}
+                    )}
+                  </Row>
+                  <Row gutter={16}>
+                    <Dropdown   overlay={this.changeStatusDropdownMenu(x.status,x.uid)}>
+                      <Button>
+                        Change Status <Icon type="down" />
+                      </Button>
+                    </Dropdown>
+                  </Row>
+                  <br></br>
+                  <br></br>
+                  <Text type="secondary">Service Package UID: {x.uid}</Text>
+                </Card>
+                <br/>
+              </div>
+            );
+        }));
+    }
   }
+
 
   render() {
     return (
       <div>
         <h1>To Do</h1>
-        <Tabs defaultActiveKey="1">
-          {config.tabs.map(status => {
+        <Tabs size="small" tabBarGutter="0">
+          {config.statuses.map(status => {
             return (
+
               <TabPane tab={status.title} key={status.key}>
-                {this.renderPackagesByStatus(status.key)}
+
+                  {this.renderPackagesByStatus(status.key)}
+
               </TabPane>
+
             )
           })}
-
-
-          {/*<TabPane tab="Requested By Customer" key="REQUESTED_BY_CUSTOMER">
-            {this.renderPackagesByStatus('REQUESTED_BY_CUSTOMER')}
-          </TabPane>
-          <TabPane tab="Setting Up Plan" key="SETTING_UP_PLAN">
-            {this.renderPackagesByStatus('SETTING_UP_PLAN')}
-          </TabPane>
-          <TabPane tab="Pending Customer Approval" key="PENDING_CUSTOMER_APPROVAL">
-            Content of Tab Pane 3
-          </TabPane>
-          <TabPane tab="Needs Setting Up" key="NEEDS_SETTING_UP">
-            Content of Tab Pane 1
-          </TabPane>
-          <TabPane tab="Setting Up Service" key="SETTING_UP_SERVICE">
-            Content of Tab Pane 1
-          </TabPane>
-          <TabPane tab="Active" key="ACTIVE">
-            Content of Tab Pane 1
-          </TabPane>
-          <TabPane tab="Cancellation Requested" key="CANCELLATION_REQUESTED_BY_CUSTOMER">
-            Content of Tab Pane 1
-          </TabPane>
-          <TabPane tab="Cancelled" key="CANCELLED">
-            Content of Tab Pane 1
-          </TabPane>
-          <TabPane tab="Expired" key="EXPIRED">
-            Content of Tab Pane 1
-          </TabPane>*/}
         </Tabs>
       </div>
     );

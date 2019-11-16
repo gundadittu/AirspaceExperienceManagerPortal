@@ -56,7 +56,7 @@ class NavBar extends React.Component {
           <Menu
             className="menu-tab"
             onClick={this.handleClick}
-            style={{ textAlign: 'right', border: 0 }}
+            style={{ textAlign: 'right', border: 0}}
             mode="horizontal"
           >
             <Menu.Item key="profile">

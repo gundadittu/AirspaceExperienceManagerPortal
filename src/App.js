@@ -23,7 +23,8 @@ import * as storeFile from './store/store';
 
 // import logo from "./logo.svg";
 import "./App.css";
-import { DatePicker, Row, Col } from "antd";
+import { DatePicker, Row, Col, Layout } from "antd";
+const { Header, Content, Footer, Sider } = Layout;
 
 
 class App extends React.Component {
@@ -82,16 +83,18 @@ class App extends React.Component {
                     </Col>
                     <Col span={20}>
                       <NavBar />
-                      <Switch>
-                        <Route exact path='/' component={HomePage} />
-                        <Route exact path='/home' component={HomePage} />
-                        <Route exact path='/to-do' component={ToDo} />
-                        <Route exact path='/profile' component={Profile} />
-                        <Route exact path='/:currentOfficeUID/services' component={Services} />
-                        <Route exact path='/:currentOfficeUID/users' component={Users} />
-                        <Route exact path='/:currentOfficeUID/office-metrics' component={OfficeMetrics} />
-                        <Route exact path='/:currentOfficeUID/support-tickets' component={SupportTickets} />
-                      </Switch>
+                      <Content style={{ padding: '0 10px' }}>
+                        <Switch>
+                          <Route exact path='/' component={HomePage} />
+                          <Route exact path='/home' component={HomePage} />
+                          <Route exact path='/to-do' component={ToDo} />
+                          <Route exact path='/profile' component={Profile} />
+                          <Route exact path='/:currentOfficeUID/services' component={Services} />
+                          <Route exact path='/:currentOfficeUID/users' component={Users} />
+                          <Route exact path='/:currentOfficeUID/office-metrics' component={OfficeMetrics} />
+                          <Route exact path='/:currentOfficeUID/support-tickets' component={SupportTickets} />
+                        </Switch>
+                      </Content>
                     </Col>
                   </MediaQuery>
                   {/*<MediaQuery maxDeviceWidth={1000}>

@@ -77,7 +77,7 @@ class SideNavBar extends React.Component {
 
     return (
       <Menu
-      style={{ border: 0 }}
+      style={{ border: 0, position: 'absolute', zIndex: 10 }}
         //defaultSelectedKeys={currentPages}
         mode="inline"
         className="airspace-side-nav-bar menu-tab"

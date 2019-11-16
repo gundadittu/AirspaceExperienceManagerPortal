@@ -1,9 +1,12 @@
 import React from "react";
 import { withRouter } from 'react-router-dom';
-import { Table, Menu, Dropdown, Button, Icon, Divider, Descriptions } from 'antd';
+import { Table, Menu, Dropdown, Button, Icon, Divider, Descriptions, Col, Row, Statistic, Typography } from 'antd';
 import { connect, Provider } from 'react-redux';
 import * as servicePackageActionCreators from '../../store/actions/servicePackage';
+import * as config from '../ToDo/ToDoConfig';
 const moment = require('moment');
+const { Text } = Typography;
+const STATUSES = ['REQUESTED_BY_CUSTOMER', 'SETTING_UP_PLAN', 'PENDING_CUSTOMER_APPROVAL', 'NEEDS_SETTING_UP', 'SETTING_UP_SERVICE', 'ACTIVE', 'CANCELLATION_REQUESTED_BY_CUSTOMER', 'CANCELLED', 'EXPIRED'];
 
 class Services extends React.Component {
 
@@ -19,9 +22,7 @@ class Services extends React.Component {
   };
 
   formatTimestamp(time){
-    var description = moment(time).format('dddd MMM DD, YYYY') + ' ';
-    description += moment(time).format('hh:mm A');
-    return description;
+    return moment.unix(time).format("MMMM Do YYYY, h:mm a");
   }
 
   formatStatus(str){
@@ -36,75 +37,62 @@ class Services extends React.Component {
     return str;
   }
 
+  // need to make this more robust
   getNextStatus(currentStatus){
-    const STATUSES = ['REQUESTED_BY_CUSTOMER', 'SETTING_UP_PLAN', 'PENDING_CUSTOMER_APPROVAL', 'NEEDS_SETTING_UP', 'SETTING_UP_SERVICE', 'ACTIVE', 'CANCELLATION_REQUESTED_BY_CUSTOMER', 'CANCELLED', 'EXPIRED'];
     for (let i = 0; i < STATUSES.length - 1; i++){
       if (STATUSES[i] == currentStatus){
         return STATUSES[i+1];
       }
     }
     return currentStatus;
-
-    // need to make this more robust
-
-
   }
-
   componentDidMount() {
     this.props.loadServicePackages();
-    // console.log('this.props.servicePackages below');
-    // console.log(this.props.packageList);
-    //this.props.editServicePackageStatus('ivAkLGclE005TZpLp59m', 'INACTIVE');
-
   };
 
-  handleStatusEdit = (e, status, servicePackageUID) => {
-    const key = e.key;
+  handleAdvanceStatus(e, status, servicePackageUID){
+    this.props.editServicePackageStatus(servicePackageUID,            this.getNextStatus(status));
+  };
 
-    if (key === "advanceStatus") {
-      console.log("advancing status")
-      this.props.editServicePackageStatus(servicePackageUID,            this.getNextStatus(status));
-      //this.props.loadServicePackages();
-    }
+  handleChangeStatus(e, servicePackageUID){
+    const newStatus = e.key;
+    this.props.editServicePackageStatus(servicePackageUID, newStatus);
   }
 
-  statusEditMenu = (status, servicePackageUID) => {
+  changeStatusDropdownMenu = (currentStatus, servicePackageUID) => {
     return (
-      <Menu onClick={(e) => this.handleStatusEdit(e,status,servicePackageUID)}>
-        <Menu.Item key="advanceStatus" >
-          <Icon type="arrow-right" />
-          Advance Status to: {this.formatStatus(this.getNextStatus(status))}
-        </Menu.Item>
-        <Menu.Item key="manuallyChangeStatus">
-          <Icon type="form" />
-          Manually Change Status
-        </Menu.Item>
-        <Menu.Item key="cancelPackage">
-          <Icon type="close" />
-          Cancel Package
-        </Menu.Item>
-      </Menu>
-    );
+      <Menu placement="bottomLeft">
+        {config.statuses.map(status => {
+          return(
+            <Menu.Item
+              key={status.key}
+              disabled={status.key === currentStatus}
+              onClick={(e) => this.handleChangeStatus(e, servicePackageUID)}>
+              {status.title}
+            </Menu.Item>
+          )
+        })}
+    </Menu>)
   };
-
 
   packageDetails = (record) => {
     return (
       <div>
-        { record.formData !== undefined &&
-          record.formData.map(x => {
+        <Row type="flex" justify="start" gutter={16}>
+          { record.formData !== undefined &&
+            record.formData.map(x => {
             return (
               <div>
-                <p>Question: {x.question}</p>
-                <p>Answer: {x.answer}</p>
+                <Col>
+                  <Statistic title={x.question} value={x.answer} />
+                </Col>
+                <br></br>
               </div>
             );}
-          )
-         }
-         { record.formData !== undefined &&
-           <Divider />
-         }
-         <p>OfficeUID: {record.officeUID._path.segments[1]}</p>
+          )}
+        </Row>
+        <br></br>
+        <Text type="secondary">OfficeUID: {record.officeUID._path.segments[1]}</Text>
 
       </div>
     );
@@ -126,7 +114,7 @@ class Services extends React.Component {
       title: 'Latest Update',
       dataIndex: 'mostRecentUpdate',
       key: 'mostRecentUpdate',
-      render: (ts) => (<span> {this.formatTimestamp(ts)} </span>)
+      render: (ts) => (<span> {this.formatTimestamp(ts._seconds)} </span>)
     },
     // change the status into an action so it can be updated
     {
@@ -135,13 +123,39 @@ class Services extends React.Component {
       key: 'status',
       render: (status, record) => (
         <React.Fragment>
-          <span> {this.formatStatus(status)}<Divider type="vertical"/></span>
-          <Dropdown overlay={this.statusEditMenu(status, record.uid)}>
-            <a className="ant-dropdown-link" href="#" style={{fontSize: 16}}>
-              Edit <Icon type="down" />
-            </a>
-          </Dropdown>
+          <span>
+            {this.formatStatus(status)}
+            <Divider type="vertical"/>
+            <Button type="primary" onClick={(e) => this.handleAdvanceStatus(e,status,record.uid)}>
+              Advance Status <Icon type="right"/>
+            </Button>
+            <Divider type="vertical"/>
+            <Dropdown  overlay={this.changeStatusDropdownMenu(status,record.uid)}>
+              <Button>
+                Change Status <Icon type="down"/>
+              </Button>
+            </Dropdown>
+          </span>
+
         </React.Fragment>
+      )
+    },
+    {
+      title: 'Advance Status',
+      render: (record) => (
+        <Button type="primary" onClick={(e) => this.handleAdvanceStatus(e,record.status,record.uid)}>
+          Advance Status <Icon type="right"/>
+        </Button>
+      )
+    },
+    {
+      title: 'Change Status',
+      render: (record) => (
+        <Dropdown  overlay={this.changeStatusDropdownMenu(record.status,record.uid)}>
+          <Button>
+            Change Status <Icon type="down"/>
+          </Button>
+        </Dropdown>
       )
     }
   ]
@@ -160,7 +174,9 @@ class Services extends React.Component {
         <Table
           columns={this.columns}
           expandedRowRender={record => this.packageDetails(record)}
-          dataSource={this.props.packageList}
+          dataSource={this.props.packageList.filter(x => {
+            return x.office.uid === this.props.currentOffice
+          })}
           loading={this.props.isLoadingServicePackages}
         />
       </div>
@@ -173,7 +189,8 @@ class Services extends React.Component {
 const mapStateToProps = state => {
     return {
       packageList: state.servicePackages.packageList,
-      isLoadingServicePackages: state.servicePackages.isLoadingServicePackages
+      isLoadingServicePackages: state.servicePackages.isLoadingServicePackages,
+      currentOffice: state.general.currentOffice
     }
 };
 

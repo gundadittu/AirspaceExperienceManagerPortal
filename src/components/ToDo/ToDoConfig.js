@@ -1,4 +1,4 @@
-export const tabs = [
+export const statuses = [
   {
     title: 'Requested By Customer',
     key: 'REQUESTED_BY_CUSTOMER'
