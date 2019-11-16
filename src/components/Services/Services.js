@@ -51,7 +51,7 @@ class Services extends React.Component {
   };
 
   handleAdvanceStatus(e, status, servicePackageUID){
-    this.props.editServicePackageStatus(servicePackageUID,            this.getNextStatus(status));
+    this.props.editServicePackageStatus(servicePackageUID, this.getNextStatus(status));
   };
 
   handleChangeStatus(e, servicePackageUID){
@@ -86,24 +86,19 @@ class Services extends React.Component {
                 <Col>
                   <Statistic title={x.question} value={x.answer} />
                 </Col>
-                <br></br>
               </div>
             );}
           )}
         </Row>
+        <Divider />
+        <Text type="secondary">ServicePackageUID: {record.uid}</Text>
         <br></br>
         <Text type="secondary">OfficeUID: {record.officeUID._path.segments[1]}</Text>
-
       </div>
     );
   };
 
   columns = [
-    {
-      title: 'ID',
-      dataIndex: 'uid',
-      key: 'uid'
-    },
     {
       title: 'Office',
       dataIndex: 'office',
@@ -116,35 +111,18 @@ class Services extends React.Component {
       key: 'mostRecentUpdate',
       render: (ts) => (<span> {this.formatTimestamp(ts._seconds)} </span>)
     },
-    // change the status into an action so it can be updated
     {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
-      render: (status, record) => (
-        <React.Fragment>
-          <span>
-            {this.formatStatus(status)}
-            <Divider type="vertical"/>
-            <Button type="primary" onClick={(e) => this.handleAdvanceStatus(e,status,record.uid)}>
-              Advance Status <Icon type="right"/>
-            </Button>
-            <Divider type="vertical"/>
-            <Dropdown  overlay={this.changeStatusDropdownMenu(status,record.uid)}>
-              <Button>
-                Change Status <Icon type="down"/>
-              </Button>
-            </Dropdown>
-          </span>
-
-        </React.Fragment>
-      )
+      render: (status, record) => (<span> {this.formatStatus(status)} </span> )
     },
     {
       title: 'Advance Status',
       render: (record) => (
-        <Button type="primary" onClick={(e) => this.handleAdvanceStatus(e,record.status,record.uid)}>
-          Advance Status <Icon type="right"/>
+        <Button 
+        type="primary" onClick={(e) => this.handleAdvanceStatus(e,record.status,record.uid)}>
+          Advance Status to <Icon type="right"/> {this.formatStatus(this.getNextStatus(record.status))}
         </Button>
       )
     },
@@ -159,11 +137,6 @@ class Services extends React.Component {
       )
     }
   ]
-
-
-  //{/* rowKey={record => record.uid.toString()} */}
-  // pagination={false}
-  // loading={this.props.isLoadingServicePackages}
 
   render() {
 
@@ -183,8 +156,6 @@ class Services extends React.Component {
     );
   }
 };
-
-
 
 const mapStateToProps = state => {
     return {

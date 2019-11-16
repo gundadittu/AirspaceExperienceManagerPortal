@@ -14,9 +14,6 @@ const STATUSES = ['REQUESTED_BY_CUSTOMER', 'SETTING_UP_PLAN', 'PENDING_CUSTOMER_
 
 const moment = require('moment');
 
-
-
-
 class ToDo extends React.Component {
 
   state = {
@@ -32,6 +29,18 @@ class ToDo extends React.Component {
     return moment.unix(time).format("h:mm A, dddd, MMMM D");
   }
 
+  formatStatus(str){
+    if (str === undefined || str === null) {
+      return "No Status Found"
+    }
+    str = str.replace(/[_-]/g, " ");
+    str = str.toLowerCase()
+      .split(' ')
+      .map((s) => s.charAt(0).toUpperCase() + s.substring(1))
+      .join(' ');
+    return str;
+  }
+
   // need to make this more robust
   getNextStatus(currentStatus){
     for (let i = 0; i < STATUSES.length - 1; i++){
@@ -43,7 +52,7 @@ class ToDo extends React.Component {
   }
 
   handleAdvanceStatus(e, status, servicePackageUID){
-    this.props.editServicePackageStatus(servicePackageUID,            this.getNextStatus(status));
+    this.props.editServicePackageStatus(servicePackageUID, this.getNextStatus(status));
   };
 
   handleChangeStatus(e, servicePackageUID){
@@ -87,7 +96,11 @@ class ToDo extends React.Component {
                   hoverable
                 >
                   <Row gutter={16}>
-                    <Button type="primary" onClick={(e) => this.handleAdvanceStatus(e,x.status,x.uid)}>Advance to Next Status <Icon type="right" /></Button>
+                    <Button 
+                      type="primary" 
+                      onClick={(e) => this.handleAdvanceStatus(e,x.status,x.uid)}>
+                      Advance Status to <Icon type="right"/> {this.formatStatus(this.getNextStatus(x.status))}
+                      </Button>
                   </Row>
                   <br></br>
                   <Row type="flex" justify="start" gutter={16}>

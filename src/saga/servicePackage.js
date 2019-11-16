@@ -11,7 +11,6 @@ function* loadServicePackagesWorkerSaga(action) {
     try {
         let firebase = yield select(selectors.firebase);
         const response = yield call(loadServicePackages, firebase);
-        console.log('hi');
         yield put({
             type: actionTypes.LOAD_SERVICE_PACKAGES_SUCCESS,
             payload: { servicePackages: response }
