@@ -28,35 +28,31 @@ function loadServicePackages(firebase) {
     const apiCall = firebase.functions.httpsCallable('getAllServicePackagesForExperienceManager');
     return apiCall({})
         .then( result => {
-
-            console.log("loadServicePackages saga response:")
-            console.log(result.data);
             return result.data;
-
     })
 };
 
-export function* loadServicePackageWatchSaga(){
-    yield takeLatest(actionTypes.LOAD_SERVICE_PACKAGE, loadServicePackageWorkerSaga);
+export function* loadPackageWatchSaga(){
+    yield takeLatest(actionTypes.LOAD_PACKAGE, loadPackageWorkerSaga);
 }
 
-function* loadServicePackageWorkerSaga(action){
+function* loadPackageWorkerSaga(action){
     try {
         let firebase = yield select(selectors.firebase);
-        const response = yield call(loadServicePackage, action.payload, firebase);
+        const response = yield call(loadPackage, action.payload, firebase);
         yield put({
-            type: actionTypes.LOAD_SERVICE_PACKAGE_SUCCESS,
+            type: actionTypes.LOAD_PACKAGE_SUCCESS,
             payload: { ...response }
         });
     } catch(error) {
         yield put({
-            type: actionTypes.LOAD_SERVICE_PACKAGE_ERROR,
+            type: actionTypes.LOAD_PACKAGE_ERROR,
             payload: { error: error }
         });
     }
 }
 
-function loadServicePackage(payload, firebase){
+function loadPackage(payload, firebase){
     const servicePackageUID = payload.servicePackageUID || null;
     const apiCall = firebase.functions.httpsCallable('loadServicePackage');
     return apiCall({ servicePackageUID: servicePackageUID })

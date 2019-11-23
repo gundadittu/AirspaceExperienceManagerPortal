@@ -7,8 +7,6 @@ const initialState = {
 };
 
 const reducer = (state = initialState, action) => {
-    console.log('reducer');
-    console.log(action.type);
     switch (action.type) {
         case actionTypes.LOAD_SERVICE_PACKAGES_SUCCESS:
             const packages = action.payload.servicePackages || null;
@@ -30,13 +28,13 @@ const reducer = (state = initialState, action) => {
             }
             const updatedServicePackages = updateObjectInArray(state.packageList, id, {status: newStatus, mostRecentUpdate: mostRecentUpdate})
             return updateObject(state, { packageList : updatedServicePackages});
-        case actionTypes.LOAD_SERVICE_PACKAGE_SUCCESS:
+        case actionTypes.LOAD_PACKAGE_SUCCESS:
             const loadedServicePackage = action.payload || null;
             if (loadedServicePackage === null) {
                 return state
             }
             return updateObject(state, {currentServicePackage: loadedServicePackage });
-        case actionTypes.LOAD_SERVICE_PACKAGE_ERROR:
+        case actionTypes.LOAD_PACKAGE_ERROR:
             console.log('service packaged loaded unsuccessfully');
             const loadServicePackageErrorPayload = action.payload || null;
             return loadServicePackageErrorPayload;

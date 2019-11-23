@@ -25,9 +25,9 @@ export const setCurrentServicePackageUID = (servicePackageUID) => {
   };
 }
 
-export const loadServicePackage = (servicePackageUID) => {
+export const loadPackage = (servicePackageUID) => {
   return {
-    type: actionTypes.LOAD_SERVICE_PACKAGE,
+    type: actionTypes.LOAD_PACKAGE,
     payload: {
       servicePackageUID: servicePackageUID
     }

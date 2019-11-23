@@ -7,7 +7,7 @@ import * as servicePackageActionCreators from '../../store/actions/servicePackag
 class ServicePackage extends React.Component {
 
     componentDidMount(){
-        this.props.loadServicePackage(this.props.currentServicePackageUID);
+        this.props.loadPackage(this.props.currentServicePackageUID);
         console.log(this.props.currentServicePackageUID);
     }
     
@@ -30,7 +30,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
     return {
-        loadServicePackage: (servicePackageUID) => dispatch(servicePackageActionCreators.loadServicePackage(servicePackageUID)),
+        loadPackage: (servicePackageUID) => dispatch(servicePackageActionCreators.loadPackage(servicePackageUID)),
         editServicePackageStatus: (servicePackageUID, newStatus) => dispatch(servicePackageActionCreators.editServicePackageStatus(servicePackageUID, newStatus))
       
     }
