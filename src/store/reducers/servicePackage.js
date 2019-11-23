@@ -12,7 +12,6 @@ const reducer = (state = initialState, action) => {
             const packages = action.payload.servicePackages || null;
             return updateObject(state, { packageList: packages });
         case actionTypes.LOAD_SERVICE_PACKAGES_ERROR:
-            console.log('load service packages error');
             const errorMessage = action.payload.error|| null;
             return updateObject(state, { error : errorMessage});
         case actionTypes.EDIT_SERVICE_PACKAGE_STATUS_SUCCESS:

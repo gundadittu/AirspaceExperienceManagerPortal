@@ -24,7 +24,6 @@ function* loadServicePackagesWorkerSaga(action) {
 }
 
 function loadServicePackages(firebase) {
-    console.log('hello there');
     const apiCall = firebase.functions.httpsCallable('getAllServicePackagesForExperienceManager');
     return apiCall({})
         .then( result => {

@@ -7,7 +7,7 @@ import * as servicePackageActionCreators from '../../store/actions/servicePackag
 import * as config from './ToDoConfig';
 
 import "./ToDo.css";
-import { Tabs, Card, Badge, Empty, Typography, Divider, Button, Icon, Statistic, Col, Row, Dropdown, Menu } from 'antd';
+import { Tabs, Card, Badge, Breadcrumb, Empty, Typography, Divider, Button, Icon, List, Statistic, Col, Row, Dropdown, Menu, Modal } from 'antd';
 const { TabPane } = Tabs;
 const { Text } = Typography;
 const STATUSES = ['REQUESTED_BY_CUSTOMER', 'SETTING_UP_PLAN', 'PENDING_CUSTOMER_APPROVAL', 'NEEDS_SETTING_UP', 'SETTING_UP_SERVICE', 'ACTIVE', 'CANCELLATION_REQUESTED_BY_CUSTOMER', 'CANCELLED', 'EXPIRED'];
@@ -22,7 +22,6 @@ class ToDo extends React.Component {
 
 
   componentDidMount(){
-    console.log('hello there');
     this.props.loadServicePackages();
   }
 
@@ -81,6 +80,69 @@ class ToDo extends React.Component {
     this.props.setCurrentServicePackageUID(servicePackageUID);
   }
 
+  renderModal(servicePackage){
+    this.props.loadPackage(servicePackage.uid);
+    return(
+      <React.Fragment>
+        <Button onClick={this.showModal}>
+          <Link>More Info (Modal)</Link>
+        </Button>
+
+        <Modal
+          title="More Info"
+          visible={this.state.visible}
+          onOk={this.handleOk}
+          onCancel={this.handleCancel}
+          width={1000}
+        >
+          <h1>Current Status: {this.formatStatus(this.props.currentServicePackage.status)}</h1>
+          <p>{this.props.currentServicePackage.uid}</p>
+          {this.renderModalActivityFeed()}
+        </Modal>
+      </React.Fragment>
+    );
+  };
+
+  renderModalActivityFeed(){
+    let data = this.props.currentServicePackage.activityFeed.sort(function(x, y){
+        return y.time._seconds - x.time._seconds;
+    });
+    return (
+        <List 
+            itemLayout="horizontal" 
+            dataSource={data}
+            renderItem={x => (
+                <List.Item>
+                    <List.Item.Meta
+                        title={<span>{this.formatStatus(x.type)}</span>}
+                        description={this.formatTimestamp(x.time._seconds)}
+                    />
+                    {this.formatStatus(x.newStatus)}
+                </List.Item>)}
+        />
+    )
+  }
+
+  showModal = () => {
+    this.setState({
+      visible: true,
+    });
+  };
+
+  handleOk = e => {
+    console.log(e);
+    this.setState({
+      visible: false,
+    });
+  };
+
+  handleCancel = e => {
+    console.log(e);
+    this.setState({
+      visible: false,
+    });
+  };
+
   renderPackagesByStatus(status){
     let packages = this.props.packageList.filter( x => {
       return x.status === status
@@ -99,46 +161,55 @@ class ToDo extends React.Component {
                   title={
                     <span>
                       {x.office.name} 
+                      
                       <Divider type='vertical'/>
+                      
                       <Button onClick = {(e) => this.setCurrentServicePackageUID(e,x.uid)}>
-                        <Link to={'/service-package/' + x.uid}>More Info</Link>
+                        <Link to={'/service-package/' + x.uid}>More Info (Separate Page)</Link>
                       </Button>
+                      
+                      <Divider type='vertical'/>
+                      
+                      {/*this.renderModal(x)*/}
                     </span>
                     }
                   extra={<span>Last Update: {this.formatTimestamp(x.mostRecentUpdate._seconds)}</span>}
                   hoverable
                 >
-                  <Row gutter={16}>
-                    <Button 
-                      type="primary" 
-                      onClick={(e) => this.handleAdvanceStatus(e,x.status,x.uid)}>
-                      Advance Status to <Icon type="right"/> {this.formatStatus(this.getNextStatus(x.status))}
+                  <Row type="flex" justify="start">
+                    <Col span={20}>
+                      { x.formData !== undefined &&
+                        x.formData.map(x => {
+                          return (
+                            <div>
+                              <Col span={4}>
+                                <Statistic title={x.question} value={x.answer} />
+                              </Col>
+                              
+                            </div>
+                          );}
+                      )}
+                    </Col>
+                    <Col span={4}>
+                      <Button 
+                        type="primary" 
+                        style={{float:'right'}}
+                        onClick={(e) => this.handleAdvanceStatus(e,x.status,x.uid)}>
+                         {this.formatStatus(this.getNextStatus(x.status))} <Icon type="arrow-right"/>
                       </Button>
+                    </Col>
                   </Row>
+                  
                   <br></br>
-                  <Row type="flex" justify="start" gutter={16}>
-                    { x.formData !== undefined &&
-                      x.formData.map(x => {
-                      return (
-                        <div>
-                          <Col>
-                            <Statistic title={x.question} value={x.answer} />
-                          </Col>
-                          <br></br>
-                        </div>
-                      );}
-                    )}
-                  </Row>
-                  <Row gutter={16}>
-                    <Dropdown overlay={this.changeStatusDropdownMenu(x.status,x.uid)}>
-                      <Button>
+                  <Divider/>
+                  <Row>
+                    <Text type="secondary">Service Package UID: {x.uid}</Text>
+                    <Dropdown style={{float:'right'}} overlay={this.changeStatusDropdownMenu(x.status,x.uid)}>
+                      <Button style={{float:'right'}}>
                         Change Status <Icon type="down" />
                       </Button>
                     </Dropdown>
                   </Row>
-                  <br></br>
-                  <br></br>
-                  <Text type="secondary">Service Package UID: {x.uid}</Text>
                 </Card>
                 <br/>
               </div>
@@ -151,8 +222,13 @@ class ToDo extends React.Component {
   render() {
     return (
       <div>
+        <Breadcrumb>
+          <Breadcrumb.Item><Link to={'/'}>Experience Manager Portal</Link></Breadcrumb.Item>
+          <Breadcrumb.Item>To Do</Breadcrumb.Item>
+        </Breadcrumb>
         <h1>To Do</h1>
-        <Tabs size="small" tabBarGutter="0">
+        <Tabs size="small" tabBarGutter="0" 
+          defaultActiveKey={this.props.currentServicePackage.uid !== null ? this.props.currentServicePackage.status : config.statuses[0].key}>
           {config.statuses.map(status => {
             return (
 
@@ -174,7 +250,8 @@ class ToDo extends React.Component {
 const mapStateToProps = state => {
     return {
       packageList: state.servicePackages.packageList,
-      isLoadingServicePackages: state.servicePackages.isLoadingServicePackages
+      isLoadingServicePackages: state.servicePackages.isLoadingServicePackages,
+      currentServicePackage: state.servicePackages.currentServicePackage
     }
 };
 
@@ -182,7 +259,8 @@ const mapDispatchToProps = dispatch => {
     return {
       loadServicePackages: () => dispatch(servicePackageActionCreators.loadServicePackages()),
       editServicePackageStatus: (servicePackageUID, newStatus) => dispatch(servicePackageActionCreators.editServicePackageStatus(servicePackageUID, newStatus)),
-      setCurrentServicePackageUID: (servicePackageUID) => dispatch(servicePackageActionCreators.setCurrentServicePackageUID(servicePackageUID))
+      setCurrentServicePackageUID: (servicePackageUID) => dispatch(servicePackageActionCreators.setCurrentServicePackageUID(servicePackageUID)),
+      loadPackage: (servicePackageUID) => dispatch(servicePackageActionCreators.loadPackage(servicePackageUID))
     }
 };
 
