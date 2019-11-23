@@ -23,6 +23,7 @@ class ToDo extends React.Component {
 
   componentDidMount(){
     this.props.loadServicePackages();
+    
   }
 
   formatTimestamp(time){

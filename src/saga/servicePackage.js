@@ -24,22 +24,23 @@ function* loadServicePackagesWorkerSaga(action) {
 }
 
 function loadServicePackages(firebase) {
+    console.log('hello there');
     const apiCall = firebase.functions.httpsCallable('getAllServicePackagesForExperienceManager');
     return apiCall({})
         .then( result => {
 
-            // console.log("loadServicePackages saga response:")
-            // console.log(result.data);
+            console.log("loadServicePackages saga response:")
+            console.log(result.data);
             return result.data;
 
     })
 };
 
 export function* loadServicePackageWatchSaga(){
-    yield takeLatest(actionTypes.LOAD_SERVICE_PACKAGE, loadServicePackageSagaWorkerSaga);
+    yield takeLatest(actionTypes.LOAD_SERVICE_PACKAGE, loadServicePackageWorkerSaga);
 }
 
-function* loadServicePackageSagaWorkerSaga(action){
+function* loadServicePackageWorkerSaga(action){
     try {
         let firebase = yield select(selectors.firebase);
         const response = yield call(loadServicePackage, action.payload, firebase);

@@ -8,6 +8,7 @@ class ServicePackage extends React.Component {
 
     componentDidMount(){
         this.props.loadServicePackage(this.props.currentServicePackageUID);
+        console.log(this.props.currentServicePackageUID);
     }
     
 
@@ -22,7 +23,7 @@ class ServicePackage extends React.Component {
 
 const mapStateToProps = state => {
     return {
-      currentServicePackageUID: state.servicePackages.currentServicePackageUID,
+      currentServicePackageUID: state.servicePackages.currentServicePackageUID.servicePackageUID,
       servicePackage: state.servicePackages.servicePackage
     }
 };
